@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/jpg" href="icon.jpg"  > 
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Ascii Art Web</title>
+    <style>
+        body {
+            background-color: rgb(222, 191, 220);
+            justify-content: center;
+            align-items: center;
+            
+        }
+        h1{
+            font-family: verdana,serif ;
+            font-size: 80px;
+            color: rgb(74, 34, 71);
+            text-align: center;
+        }
+        h3{
+            font-family: 'Times New Roman', Times;
+            font-size: 20px;
+            font-weight: bold;
+            color: rgb(58, 23, 55);
+            text-align: center;
+        }
+        p{
+            font-family: 'Times New Roman', Times;
+            font-size: 20px;
+            font-weight: bold;
+            color: rgb(58, 23, 55);
+            text-align: center;
+        }
+        optgroup{
+            font-size: 15px; 
+        }
+        #Fonts{
+            margin: auto 47%;
+            color: rgb(58, 23, 55);
+            
+        }
+        #in_put {
+            color: rgb(58, 23, 55);
+            font-family: Verdana, sans-serif;
+            font: 1em sans-serif;
+            margin: auto 30%;
+            padding: 1em;
+            border: 2px solid #c3a6c5;
+            border-radius: 0.5em;
+            box-sizing: border-box;
+            width: 40%;
+        } 
+        #generate{
+            font-size: 20px;  
+            margin: auto 47%;
+            font-weight: bold;
+            background-color: rgb(172, 114, 177); 
+            color: rgb(58, 23, 55);
+        }
+        #out{
+            color: rgb(58, 23, 55);
+            font-family: Verdana, sans-serif;
+            font: 1em sans-serif;
+            margin : auto 0;
+            padding: 1em;
+            border: 2px solid #c3a6c5;
+            border-radius: 0.5em;
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+        } 
+        #end {
+            text-align: center;
+            padding: 1em;
+            color: rgb(138, 91, 132);
+        }
+        #button {
+            text-align: center;
+            color: rgb(58, 23, 55);
+            background-color: rgb(189, 134, 194); 
+            font-size: 15px; 
+            font-weight: bold;
+            margin: auto 48%;
+        }
+
+    </style>
+</head>
+<body >
+    <header>
+        <a href="https://learn.zone01oujda.ma/" ><img src="images.jpeg"
+            alt="zone01oujda"></a>
+      
+    </header>
+    <h1>Ascii Generateur</h1>
+    <p>Select a Font:</p>
+    <form action="/ascii-art" method="POST">
+        <div class="fonds" id="Fonts" >
+                <select id="fonts" name="banner">
+                <option value="">choose a banner</option>
+                <option value="standard" >Standard  </option>
+                <option value="shadow">Shadow   </option>
+                <option value="dos">Dos   </option>
+                <option value="thinkertoy">Thinkertoy  </option>
+                <option value="varsity">Varsity  </option>
+                </select>
+            </div>
+        <p>Type something:</p>
+        <div class="texte"> 
+          <textarea id="in_put" name="text" rows="3"> </textarea>
+          <input type="submit" value="Generate" id="generate"/>
+        </div>
+      
+        
+    <p>Output:</p>
+    <div class="output" >
+       <pre>{{.}}</pre>
+        <!-- <textarea  name="output" id="out" rows="10" >{{.}}</textarea> -->
+           
+    </div>
+    <button id="button">
+        <a href="/">Back</a>
+    </button>
+      </form>
+      <div id="end">
+        <footer>
+        Made by : Hasnae
+                  Anas
+                  Ayoub 
+         <br>
+       </footer>
+       </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+body {
+    background-color: rgb(222, 191, 220);
+}
+h1{
+    font-family: verdana,serif ;
+    font-size: 80px;
+    color: rgb(74, 34, 71);
+    text-align: center;
+}
+h3{
+    font-family: 'Times New Roman', Times;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(58, 23, 55);
+    text-align: center;
+}
+p{
+    font-family: 'Times New Roman', Times;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(58, 23, 55);
+    text-align: center;
+}
+optgroup{
+    font-size: 15px; 
+}
+#fonts{
+    margin: auto 47%;
+    color: rgb(58, 23, 55);
+}
+#in_put {
+    font-size: 15px;  
+    margin: auto 45%;
+    color: rgb(58, 23, 55);
+} 
+#generate{
+    font-size: 15px;  
+    margin: auto 47%;
+    font-weight: bold;
+    background-color: rgb(172, 114, 177); 
+    color: rgb(58, 23, 55);
+}
