@@ -83,7 +83,8 @@ function playerShoot() {
 
 /******************** move Player ***************/
 document.addEventListener('keydown', (event) => {
-    if (gameOver) return;
+
+    if (!gameStarted || gamePaused || gameOver) return;
 
     switch (event.key) {
         case 'ArrowLeft':
@@ -104,6 +105,7 @@ document.addEventListener('keydown', (event) => {
 
 /***************** Move Invaders *****************/
 function moveInvaders() {
+    if (!gameStarted || gamePaused) return;
     let touched = false;
 
     for (let i = 0; i < invaders.length; i++) {
@@ -133,8 +135,8 @@ function moveInvaders() {
     }
 }
 
-let invaderBounding = player.getBoundingClientRect();
-console.log("getBoundingClientRect invader : ", invaderBounding);
+// let invaderBounding = player.getBoundingClientRect();
+// console.log("getBoundingClientRect invader : ", invaderBounding);
 
 /****************** Check Colllision *****************/
 
@@ -148,6 +150,7 @@ function checkCollision(elem1, elem2) {
 /****************** move player shoot *****************/
 function moveBulletsPlayer() {
 
+    if (!gameStarted || gamePaused || gameOver) return;
     setTimeout(() => shootCooldown);
     for (let i = bullets.length - 1; i >= 0; i--) {
         moveObjet(bullets[i], bullets[i].x, bullets[i].y - 5);
@@ -196,14 +199,10 @@ function Timer() {
     timeLeft--;
     document.getElementsByClassName('timer').textContent = `Timer: ${timeLeft}s`;
     if (timeLeft <= 0) {
-        endGame('tsala lwa9t 🥲');
+        showPopUp('tsala lwa9t 🥲')
     }
 }
 
-function endGame(message) {
-    clearInterval(gameLoop);
-    showPopUp(message)
-}
 
 /*---------------- show PopUp -----------------*/
 function showPopUp(message) {
@@ -231,10 +230,14 @@ function pauseGame() {
     cancelAnimationFrame(ReqID)
 
     if (!gameStarted) return;
+
     gamePaused = !gamePaused;
     if (gamePaused) {
+        console.log("pause!!!")
         showPopUp('GAME PAUSED');
-    } 
+    } else {
+        hidePopUp(); 
+    }
 }
 
 /****************** Hide PopUp ******************/
@@ -247,7 +250,7 @@ function hidePopUp() {
 function startGame() {
     gameStarted = true;
     createInvaders();
-
+    hidePopUp();
     gameLoop = setInterval(() => {
         if (gameOver) return;
         //Timer()
