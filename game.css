@@ -1,8 +1,8 @@
 h1 {
     color: #28cc12;
-    font-size: 50px;
+    font-size: 30px;
     text-align: center;
-    margin-top: 40px;
+    margin-top: 13px;
 }
 
 .game-container { 
@@ -62,6 +62,10 @@ h1 {
     box-sizing: border-box;
 }
 
+.enemy-bullet {
+    background: red;
+}
+
 .bullet {
     width: 5px;
     height: 15px;
@@ -72,7 +76,7 @@ h1 {
 .invader {
     width: 40px;
     height: 40px;
-    background-image: url("enemy2.png");
+    background-image: url("images/enemy2.png");
     background-repeat: no-repeat;
     background-size: contain;
     position: absolute;
@@ -81,7 +85,7 @@ h1 {
 .player {
     width: 50px;
     height: 50px;
-    background-image: url("player.png");
+    background-image: url("images/player.png");
     background-repeat: no-repeat;
     background-size: contain;
     position: absolute;
