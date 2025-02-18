@@ -3,6 +3,7 @@
 
 const bulletSize = 5;
 let score = 0;
+let lives = 3;
 let gameOver = false;
 let timeLeft = 50;
 let invaderDirection = 1;
@@ -19,7 +20,7 @@ const popUp = document.querySelector('.popUp');
 const popUpContent = document.querySelector('.popUp-content');
 const displayScore = document.querySelector('.score span');
 const displayTimer = document.querySelector('.timer');
-
+const displayLives = document.querySelector('.lives span')
 
 /************* container *************/
 const gameContainer = document.createElement('div');
@@ -81,7 +82,29 @@ function playerShoot() {
 }
 
 let canShoot = true
+
+
+/************* Tir aleatoire des invaders ***********/
+function enemyShoot() {
+    if (invaders.length > 0 && Math.random() < 0.03) {
+        let shooter = invaders[Math.floor(Math.random() * invaders.length)];
+        let bullet = createObjet(shooter.x + 20, shooter.y + 40 , 'bullet enemy-bullet');
+        enemyBullets.push(bullet);
+        console.log("8888", enemyBullets, "enemyBullets !!")
+    }
+}
+
+
+/****************** Player Lives *****************/
+function playerLives() {
+    const heartsArray = new Array(lives).fill('❤️');
+    displayLives.innerHTML = heartsArray.join('');
+}
+
+
 /******************** move Player ***************/
+function movePlayer() {
+
 document.addEventListener('keydown', (event) => {
 
     if (!gameStarted || gamePaused || gameOver) return;
@@ -89,12 +112,12 @@ document.addEventListener('keydown', (event) => {
     switch (event.key) {
         case 'ArrowLeft':
             if (player.x > 0) {
-                moveObjet(player, player.x - 5, player.y);
+                moveObjet(player, player.x - 1, player.y);
             }
             break;
         case 'ArrowRight':
             if (player.x < 550) {
-                moveObjet(player, player.x + 5, player.y);
+                moveObjet(player, player.x + 1, player.y);
             }
             break;
         case ' ':
@@ -110,6 +133,7 @@ document.addEventListener('keydown', (event) => {
             break;
     }
 });
+}
 
 /***************** Move Invaders *****************/
 function moveInvaders() {
@@ -124,7 +148,7 @@ function moveInvaders() {
 
     // Changer de direction une fois toucher le bord (janb)
     if (touched) {
-        invaderDirection *= -1;
+        invaderDirection *= -1; movePlayer() 
         for (let i = 0; i < invaders.length; i++) {
             moveObjet(invaders[i], invaders[i].x, invaders[i].y + 20);
 
@@ -140,6 +164,10 @@ function moveInvaders() {
         for (let i = 0; i < invaders.length; i++) {
             moveObjet(invaders[i], invaders[i].x + (2 * invaderDirection), invaders[i].y);
         }
+    }
+    if (invaders.length === 0 && !gameOver) { 
+        gameStarted = false;
+        showPopUp('YOU WIN!');
     }
 }
 
@@ -160,25 +188,67 @@ function checkCollision(elem1, elem2) {
         return true
 }
 
+/****************** move player shoot *****************/
+function moveBulletsPlayer() {
+
+    if (!gameStarted || gamePaused || gameOver) return;
 
 
-/***************** move Bullets Invaders **************/
-function moveBulletsInvaders() {
-    for (let i = enemyBullets.length - 1; i >= 0; i--) {
-        let bullet = enemyBullets[i];
-        moveObjet(bullet, bullet.x, bullet.y + 5);
+    for (let i = 0 ; i< bullets.length; i++) {
+        moveObjet(bullets[i], bullets[i].x, bullets[i].y - 5);
 
         // Verifier sortie de container
-        if (bullet.y > 600) {
-            removeObjet(bullet);
+        if (bullets[i].y < 0) {
+            removeObjet(bullets[i]);
+            bullets.splice(i, 1);
+            continue;
+        }
+
+        // Verifier collision avec invaders
+        for (let j = invaders.length - 1; j >= 0; j--) {
+
+            if (checkCollision(bullets[i], invaders[j])) {
+                
+                removeObjet(invaders[j]);
+                removeObjet(bullets[i]);
+
+                bullets.splice(i, 1);
+                invaders.splice(j, 1);
+                score += 10;
+                displayScore.innerHTML = score;
+                break;
+            }
+        }
+    }
+}
+
+/*************** move Bullets Invaders **************/
+
+function moveBulletsInvaders() {
+
+    for (let i = 0 ; i< enemyBullets.length; i++) {
+        let bulletEn = enemyBullets[i];
+        moveObjet(bulletEn, bulletEn.x, bulletEn.y + 5);
+
+        // Verifier sortie de container
+        if (bulletEn.y > 550) {
+            removeObjet(bulletEn);
             enemyBullets.splice(i, 1);
             continue;
         }
 
         // Verifier collision avec player
-        if (checkCollision(bullet, player)) {
-            gameOver = true;
-            endGame('Game Over!');
+        if (checkCollision(bulletEn, player)) {
+            removeObjet(bulletEn);
+            enemyBullets.splice(i, 1);
+            lives--;
+            playerLives();
+
+            if (lives <= 0) {
+                gameOver = true;
+                showPopUp('GAME OVER!');
+                return;
+            }
         }
     }
 } 
@@ -192,9 +262,13 @@ function gameLoop() {
     if (gameStarted && !gameOver) {
         if (counter === 60) {
             Timer()
+            movePlayer() 
             counter = 0
         }
 
+        enemyShoot();
+        //movePlayer() 
+        moveBulletsInvaders()
         moveInvaders()
         moveBulletsPlayer();
         counter++
@@ -204,7 +278,7 @@ function gameLoop() {
 
 /******************* Timer *******************/
 function Timer() {
-    if (gamePaused) return;
+    if (gamePaused || !gameStarted) return;
     timeLeft--;
     displayTimer.textContent = `Timer: ${timeLeft}s`;
     if (timeLeft <= 0) {
