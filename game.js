@@ -333,6 +333,7 @@ function hidePopUp() {
 function startGame() {
     if (gameOver) return;
     gameStarted = true;
+    timeLeft = 60;
     createInvaders();
     hidePopUp();
     gameLoop()
