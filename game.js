@@ -5,7 +5,7 @@ const bulletSize = 5;
 let score = 0;
 let lives = 3;
 let gameOver = false;
-let timeLeft = 50;
+let timeLeft = 60;
 let invaderDirection = 1;
 let gamePaused = false;
 let gameStarted = false;
@@ -14,8 +14,8 @@ let bullets = [];
 let enemyBullets = [];
 let shootCooldown = 500;
 
-const startBtn = document.querySelector('.startBtn');
-const pauseBtn = document.querySelector('.pauseBtn');
+// const startBtn = document.querySelector('.startBtn');
+// const pauseBtn = document.querySelector('.pauseBtn');
 const popUp = document.querySelector('.popUp');
 const popUpContent = document.querySelector('.popUp-content');
 const displayScore = document.querySelector('.score span');
@@ -50,7 +50,7 @@ let player = createObjet(275, 500, 'player');
 /******************** Create invaders ***************/
 function createInvaders() {
     for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 5; col++) {
+        for (let col = 0; col < 6; col++) {
             let x = 50 + (col * 60);
             let y = 50 + (row * 60);
             invaders.push(createObjet(x, y, 'invader'));
@@ -86,7 +86,7 @@ let canShoot = true
 function enemyShoot() {
     if (invaders.length > 0 && Math.random() < 0.03) {
         let shooter = invaders[Math.floor(Math.random() * invaders.length)];
-        let bullet = createObjet(shooter.x + 20, shooter.y + 40 , 'bullet enemy-bullet');
+        let bullet = createObjet(shooter.x + 20, shooter.y + 40, 'bullet enemy-bullet');
         enemyBullets.push(bullet);
     }
 }
@@ -94,49 +94,57 @@ function enemyShoot() {
 
 /****************** Player Lives *****************/
 function playerLives() {
+    if (lives < 0) lives = 0;
     const heartsArray = new Array(lives).fill('❤️');
     displayLives.innerHTML = heartsArray.join('');
 }
 
 
 /******************** move Player ***************/
-function movePlayer() {
 
+let keys = {}
 document.addEventListener('keydown', (event) => {
 
     if (!gameStarted || gamePaused || gameOver) return;
+    console.log(keys);
+    
+    keys[event.key] = true
 
-    switch (event.key) {
-        case 'ArrowLeft':
-            if (player.x > 0) {
-                moveObjet(player, player.x - 1, player.y);
-            }
-            break;
-        case 'ArrowRight':
-            if (player.x < 550) {
-                moveObjet(player, player.x + 1, player.y);
-            }
-            break;
-        case ' ':
-            if (canShoot) {
-                playerShoot();
-                canShoot = false
-                setTimeout(() => {
-                    canShoot = true
+    if (event.key === " ") {
 
-                }, 200)
-            }
+        if (canShoot) {
+            playerShoot();
+            canShoot = false
+            setTimeout(() => {
+                canShoot = true
 
-            break;
+            }, 200)
+        }
     }
 });
+document.addEventListener('keyup', (event) => {
+    keys[event.key] = false
+
+})
+
+function movePlayer() {
+    if (keys['ArrowLeft']) {
+        if (player.x > 0) {
+            moveObjet(player, player.x - 5, player.y);
+        }
+    }
+    if (keys['ArrowRight']) {
+        if (player.x < 550) {
+            moveObjet(player, player.x + 5, player.y);
+        }
+    }
 }
 
 /***************** Move Invaders *****************/
 function moveInvaders() {
-    //if (!gameStarted || gamePaused) return;
+    if (!gameStarted || gamePaused || gameOver) return;
     let touched = false;
-    
+
 
     for (let i = 0; i < invaders.length; i++) {
         if ((invaders[i].x > 550 && invaderDirection > 0) || (invaders[i].x < 10 && invaderDirection < 0)) {
@@ -146,7 +154,7 @@ function moveInvaders() {
 
     // Changer de direction une fois toucher le bord (janb)
     if (touched) {
-        invaderDirection *= -1; movePlayer() 
+        invaderDirection *= -1; movePlayer()
         for (let i = 0; i < invaders.length; i++) {
             moveObjet(invaders[i], invaders[i].x, invaders[i].y + 20);
 
@@ -163,11 +171,11 @@ function moveInvaders() {
             moveObjet(invaders[i], invaders[i].x + (2 * invaderDirection), invaders[i].y);
             if (checkCollision(player, invaders[i])) {
                 gameOver = true;
-                showPopUp('')
+                showPopUp('GAME OVER')
             }
         }
     }
-    if (invaders.length === 0 && !gameOver) { 
+    if (invaders.length === 0 && !gameOver) {
         gameStarted = false;
         showPopUp('YOU WIN!');
     }
@@ -179,15 +187,15 @@ console.log("getBoundingClientRect invader : ", invaderBounding);
 /****************** Check Colllision *****************/
 
 function checkCollision(elem1, elem2) {
-       let bulletRECT = elem1.element.getBoundingClientRect()
-       let invaderRECT = elem2.element.getBoundingClientRect()
-       if (bulletRECT.right <= invaderRECT.left || 
-        bulletRECT.left >= invaderRECT.right || 
-        bulletRECT.bottom <= invaderRECT.top || 
+    let bulletRECT = elem1.element.getBoundingClientRect()
+    let invaderRECT = elem2.element.getBoundingClientRect()
+    if (bulletRECT.right <= invaderRECT.left ||
+        bulletRECT.left >= invaderRECT.right ||
+        bulletRECT.bottom <= invaderRECT.top ||
         bulletRECT.top >= invaderRECT.bottom) {
-           return false
-        }
-        return true
+        return false
+    }
+    return true
 }
 
 /****************** move player shoot *****************/
@@ -196,7 +204,7 @@ function moveBulletsPlayer() {
     if (!gameStarted || gamePaused || gameOver) return;
 
 
-    for (let i = 0 ; i< bullets.length; i++) {
+    for (let i = 0; i < bullets.length; i++) {
         moveObjet(bullets[i], bullets[i].x, bullets[i].y - 5);
 
         // Verifier sortie de container
@@ -210,7 +218,7 @@ function moveBulletsPlayer() {
         for (let j = invaders.length - 1; j >= 0; j--) {
 
             if (checkCollision(bullets[i], invaders[j])) {
-                
+
                 removeObjet(invaders[j]);
                 removeObjet(bullets[i]);
 
@@ -228,7 +236,8 @@ function moveBulletsPlayer() {
 
 function moveBulletsInvaders() {
 
-    for (let i = 0 ; i< enemyBullets.length; i++) {
+    if (!gameStarted || gamePaused || gameOver) return;
+    for (let i = 0; i < enemyBullets.length; i++) {
         let bulletEn = enemyBullets[i];
         moveObjet(bulletEn, bulletEn.x, bulletEn.y + 5);
 
@@ -248,33 +257,36 @@ function moveBulletsInvaders() {
 
             if (lives === 0) {
                 gameOver = true;
+                gamePaused = true
                 showPopUp('GAME OVER!');
                 return;
             }
         }
     }
-} 
+}
 
 
 /******************* Game Loop **********************/
 let ReqID = null
 let counter = 0
 function gameLoop() {
+console.log(31213);
 
-    if (gameStarted) {
+    if (gameStarted || !gameOver) {
         if (counter === 60) {
             Timer()
-            movePlayer() 
             counter = 0
         }
 
         enemyShoot();
-       // movePlayer() 
+        movePlayer()
         moveBulletsInvaders()
         moveInvaders()
         moveBulletsPlayer();
         counter++
-        ReqID = requestAnimationFrame(gameLoop)
+        if (!gameOver) {
+            ReqID = requestAnimationFrame(gameLoop)
+        }
     }
 }
 
@@ -284,7 +296,8 @@ function Timer() {
     timeLeft--;
     displayTimer.textContent = `Timer: ${timeLeft}s`;
     if (timeLeft <= 0) {
-        gameStarted = false
+        gameStarted = false;
+        gameOver = true;
         showPopUp('TIME\'S UP - GAME OVER!')
     }
 }
@@ -302,7 +315,7 @@ function showPopUp(message) {
         ${message === 'GAME PAUSED' ?
                 `<button onclick="pauseGame()">Continue</button>
                  <button onclick="Restart()">Restart</button>` :
-                `<button onclick="startGame()">Play Again</button>`
+                `<button onclick="Restart()">Play Again</button>`
             }
     `;
     }
@@ -333,10 +346,10 @@ function hidePopUp() {
 function Restart() {
     gamePaused = false;
     score = 0;
-    displayScore.innerHTML = '0';  
+    displayScore.innerHTML = '0';
     lives = 3;
     timeLeft = 60;
-    //playerLives();
+    playerLives();
     displayTimer.textContent = `Timer: ${timeLeft}s`;
     invaders.forEach(invader => removeObjet(invader));
     bullets.forEach(bullet => removeObjet(bullet));
@@ -354,13 +367,13 @@ function Restart() {
 /***************** Start Game *****************/
 function startGame() {
     console.log(gameOver);
-    
+
     if (gameOver) {
         score = 0;
-        displayScore.innerHTML = '0';  
+        displayScore.innerHTML = '0';
         lives = 3;
         timeLeft = 60;
-        //playerLives();
+        playerLives();
         displayTimer.textContent = `Timer: ${timeLeft}s`;
         invaders.forEach(invader => removeObjet(invader));
         bullets.forEach(bullet => removeObjet(bullet));
@@ -371,7 +384,7 @@ function startGame() {
         gameOver = false;
     }
 
-   gameStarted = true;
+    gameStarted = true;
     createInvaders();
     hidePopUp();
     gameLoop()
