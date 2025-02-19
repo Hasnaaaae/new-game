@@ -27,9 +27,7 @@ const gameContainer = document.createElement('div');
 gameContainer.className = 'game-container';
 document.body.appendChild(gameContainer);
 
-let gameContainerRECT = gameContainer.getBoundingClientRect()
 
-console.log("getBoundingClientRect : ", gameContainerRECT.top);
 
 
 /******************** Create Object ***************/
@@ -90,7 +88,6 @@ function enemyShoot() {
         let shooter = invaders[Math.floor(Math.random() * invaders.length)];
         let bullet = createObjet(shooter.x + 20, shooter.y + 40 , 'bullet enemy-bullet');
         enemyBullets.push(bullet);
-        console.log("8888", enemyBullets, "enemyBullets !!")
     }
 }
 
@@ -137,8 +134,9 @@ document.addEventListener('keydown', (event) => {
 
 /***************** Move Invaders *****************/
 function moveInvaders() {
-    if (!gameStarted || gamePaused) return;
+    //if (!gameStarted || gamePaused) return;
     let touched = false;
+    
 
     for (let i = 0; i < invaders.length; i++) {
         if ((invaders[i].x > 550 && invaderDirection > 0) || (invaders[i].x < 10 && invaderDirection < 0)) {
@@ -163,6 +161,10 @@ function moveInvaders() {
         // mouvement normal
         for (let i = 0; i < invaders.length; i++) {
             moveObjet(invaders[i], invaders[i].x + (2 * invaderDirection), invaders[i].y);
+            if (checkCollision(player, invaders[i])) {
+                gameOver = true;
+                showPopUp('')
+            }
         }
     }
     if (invaders.length === 0 && !gameOver) { 
@@ -244,7 +246,7 @@ function moveBulletsInvaders() {
             lives--;
             playerLives();
 
-            if (lives <= 0) {
+            if (lives === 0) {
                 gameOver = true;
                 showPopUp('GAME OVER!');
                 return;
@@ -259,7 +261,7 @@ let ReqID = null
 let counter = 0
 function gameLoop() {
 
-    if (gameStarted && !gameOver) {
+    if (gameStarted) {
         if (counter === 60) {
             Timer()
             movePlayer() 
@@ -267,7 +269,7 @@ function gameLoop() {
         }
 
         enemyShoot();
-        //movePlayer() 
+       // movePlayer() 
         moveBulletsInvaders()
         moveInvaders()
         moveBulletsPlayer();
@@ -287,7 +289,7 @@ function Timer() {
     }
 }
 
-/*---------------- show PopUp -----------------*/
+/**************** show PopUp *****************/
 function showPopUp(message) {
     popUp.style.display = 'flex';
     if (!startGame) {
@@ -299,7 +301,7 @@ function showPopUp(message) {
         <h2>${message}</h2>
         ${message === 'GAME PAUSED' ?
                 `<button onclick="pauseGame()">Continue</button>
-                 <button onclick="startGame()">Restart</button>` :
+                 <button onclick="Restart()">Restart</button>` :
                 `<button onclick="startGame()">Play Again</button>`
             }
     `;
@@ -307,7 +309,7 @@ function showPopUp(message) {
 
 }
 
-/****************** pauseGame ******************/
+/**************** pauseGame ****************/
 function pauseGame() {
 
     cancelAnimationFrame(ReqID)
@@ -328,12 +330,48 @@ function hidePopUp() {
     popUp.style.display = 'none';
 }
 
+function Restart() {
+    gamePaused = false;
+    score = 0;
+    displayScore.innerHTML = '0';  
+    lives = 3;
+    timeLeft = 60;
+    //playerLives();
+    displayTimer.textContent = `Timer: ${timeLeft}s`;
+    invaders.forEach(invader => removeObjet(invader));
+    bullets.forEach(bullet => removeObjet(bullet));
+    enemyBullets.forEach(bullet => removeObjet(bullet));
+    invaders = [];
+    bullets = [];
+    enemyBullets = [];
+    gameOver = false;
+    gameStarted = true;
+    createInvaders();
+    hidePopUp();
+    gameLoop()
+}
 
 /***************** Start Game *****************/
 function startGame() {
-    if (gameOver) return;
-    gameStarted = true;
-    timeLeft = 60;
+    console.log(gameOver);
+    
+    if (gameOver) {
+        score = 0;
+        displayScore.innerHTML = '0';  
+        lives = 3;
+        timeLeft = 60;
+        //playerLives();
+        displayTimer.textContent = `Timer: ${timeLeft}s`;
+        invaders.forEach(invader => removeObjet(invader));
+        bullets.forEach(bullet => removeObjet(bullet));
+        enemyBullets.forEach(bullet => removeObjet(bullet));
+        invaders = [];
+        bullets = [];
+        enemyBullets = [];
+        gameOver = false;
+    }
+
+   gameStarted = true;
     createInvaders();
     hidePopUp();
     gameLoop()
